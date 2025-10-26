@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agregar Libro</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <h1>Biblioteca 📚</h1>
+
+  <form id="form-libro" action="/libros" method="POST">
+    <label>Título</label>
+    <input type="text" name="titulo" required>
+
+    <label>Autor</label>
+    <input type="text" name="autor" required>
+
+    <label>Año</label>
+    <input type="number" name="año" required>
+
+    <button type="submit">Agregar</button>
+  </form>
+
+  <div id="respuesta"></div>
+
+  <script>
+    const form = document.getElementById("form-libro");
+    const respuesta = document.getElementById("respuesta");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = new FormData(form);
+      const payload = Object.fromEntries(data.entries());
+
+      const res = await fetch("/libros", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        respuesta.textContent = "Error: " + json.error;
+        return;
+      }
+
+      respuesta.textContent =
+        `Libro agregado: ${json.titulo} de ${json.autor} (${json.año})`;
+      form.reset();
+    });
+  </script>
+</body>
+</html>
